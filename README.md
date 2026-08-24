@@ -31,7 +31,7 @@ https://github.com/Aarya01p/Voice-Assistance-Shopping/
 ![Shopping List](screenshots/shopping-list.png)
 
 ## Mobile Interface
-![Mobile Interface](screenshots/mobile.png)
+![Mobile Interface](screenshots/mobile.jpeg)
 
 ---
 
