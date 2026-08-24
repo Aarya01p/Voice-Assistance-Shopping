@@ -1,75 +1,180 @@
-# VoiceCart
+# VoiceCart 🛒
 
-A voice-controlled shopping list that runs entirely in the browser. No backend, no build step — just open `index.html` and start talking (or typing) to it.
+VoiceCart is a voice-controlled shopping list assistant that lets users manage their shopping list using natural voice commands or text.
 
-I built this to see how far I could get with the Web Speech API and some plain regex instead of reaching for an actual NLP library or a paid API. Turns out you can get pretty far.
+I built this project as a technical assessment to explore voice interaction and lightweight NLP without using a backend or paid AI APIs.
 
-## What it does
+## 🌐 Live Demo
 
-- Add/remove/check off items by voice or text — "add 2 litres of milk", "remove apples", "check off butter"
-- Understands quantities and units ("buy 5 oranges", "500g of butter")
-- Auto-sorts items into categories (produce, dairy, meat, etc.) based on keywords
-- Gives suggestions based on what you've bought before, what's in season, and swaps for things already on your list
-- Works offline once loaded (it's a PWA — installable, has a service worker)
-- Voice search for the built-in item catalog
-- Share your list via the Web Share API or copy-paste
+**Application:**  
+https://aarya01p.github.io/Voice-Assistance-Shopping/
 
-Currently set up for English and Hindi (India) — swapping in more languages is just a matter of adding entries to the `LANGUAGES` array in `app.js`, Web Speech API supports a bunch more.
+**GitHub:**  
+https://github.com/Aarya01p/Voice-Assistance-Shopping/
 
-## How the NLP works
+> Chrome or Edge is recommended for voice features. Allow microphone access when prompted.
 
-There's no external API call for parsing commands — it's a regex/keyword pipeline instead:
+---
 
-1. Match the transcript against a list of intent patterns (add / remove / check / search / clear) — first match wins
-2. Pull out a quantity + unit if there is one ("2 litres", "a dozen", "500g")
-3. Strip out the intent words, quantity, and filler phrases ("please", "my list", etc.) — whatever's left is the item name
+## 📸 Screenshots
 
-It's not perfect, but it handles the common phrasings well enough and there's zero latency since nothing leaves the browser.
+### Main Interface
+![Main Interface](screenshots/home.png)
 
-## Running it
+### Voice Commands
+![Voice Command](screenshots/voice-command.png)
 
-Easiest way is just to serve the folder locally, since Chrome won't allow mic access on a plain `file://` page:
+### Smart Suggestions
+![Smart Suggestions](screenshots/suggestions.png)
 
-```bash
-git clone <this repo>
-cd voice-shopping-assistant
-python -m http.server 8080
-# or: npx serve .
+### Shopping List
+![Shopping List](screenshots/shopping-list.png)
+
+## Mobile Interface
+![Mobile Interface](screenshots/mobile.png)
+
+---
+
+## ✨ Features
+
+- 🎙️ Add, remove, modify, and check items using voice commands
+- 🧠 Lightweight NLP using JavaScript, keywords, and regular expressions
+- 📦 Automatic item categorization
+- 🔢 Quantity and unit detection
+- 💡 Suggestions based on shopping history, seasonal items, and substitutes
+- 🔎 Voice and text-based product search
+- 🌍 English and Hindi voice support
+- 📱 Responsive desktop and mobile interface
+- 💾 Local storage for shopping data and history
+- 📡 Offline shopping-list functionality after the initial load
+- 📤 Share or copy the shopping list
+- 📲 PWA support
+
+---
+
+## 🎙️ Example Commands
+
+```text
+"Add milk"
+
+"I need two apples"
+
+"Buy 5 oranges"
+
+"Remove milk"
+
+"Check off bread"
+
+"Find organic apples"
+
+"Find toothpaste under 5 dollars"
+````
+
+---
+
+## 🧠 How It Works
+
+The Web Speech API converts voice input into text. A lightweight NLP parser then identifies the intent, item, quantity, and unit using keywords and regular expressions.
+
+For example:
+
+```text
+"Add 2 bottles of water"
+
+        ↓
+
+Intent: ADD
+Quantity: 2
+Unit: bottles
+Item: water
 ```
 
-Then open `http://localhost:8080`. You can technically open `index.html` directly too, but you'll need to enable "Insecure origins treated as secure" for localhost/file in chrome://flags if you want the mic to work that way — serving it is just easier.
+The command is then processed by the shopping-list logic and the UI is updated immediately.
 
-Alt+Space toggles the mic from the keyboard if you don't want to click.
+Smart suggestions use shopping history, seasonal data, and predefined product alternatives.
 
-## Browser support
+---
 
-Voice input needs the Web Speech API, so:
+## 🛠️ Tech Stack
 
-- Chrome / Edge — full support
-- Safari 16.4+ — mostly works
-- Firefox — doesn't implement it, but the text input still works fine as a fallback
+* HTML5
+* CSS3
+* JavaScript
+* Web Speech API
+* LocalStorage
+* Service Worker / PWA
+* Web Share API
+* GitHub Pages
 
-Voice recognition also needs HTTPS once you're not on localhost — Chrome blocks the mic on plain HTTP otherwise.
+---
 
-## Files
+## 📁 Project Structure
 
-- `index.html` — the page structure
-- `styles.css` — all the styling
-- `app.js` — everything else (NLP parsing, the state store, suggestions, voice handling, rendering)
-- `sw.js` / `manifest.json` — PWA bits (offline caching, installability)
+```text
+Voice-Assistance-Shopping/
+│
+├── index.html
+├── styles.css
+├── app.js
+├── sw.js
+├── manifest.json
+├── screenshots/
+└── README.md
+```
 
-## Deploying
+---
 
-Any static host works since there's no server component. Netlify Drop, Vercel, or GitHub Pages are the easiest — drag the folder in, or `npx vercel --prod`, or push to a repo and turn on Pages.
+## ▶️ Run Locally
 
-## Ideas for later
+Clone the repository:
 
-- Real product data instead of the hardcoded catalog (Open Food Facts API is free and would work well here)
-- Barcode scanning via the camera
-- Actual cloud sync instead of just localStorage
-- Multiple lists (right now there's just the one)
-- Light theme option
+```bash
+git clone https://github.com/Aarya01p/Voice-Assistance-Shopping.git
+cd Voice-Assistance-Shopping
+```
 
-## License
+Start a local server:
+
+```bash
+python -m http.server 8080
+```
+
+Then open:
+
+```text
+http://localhost:8080
+```
+
+You can also use VS Code Live Server.
+
+---
+
+## 📱 Browser Support
+
+Chrome and Edge are recommended because voice recognition uses the Web Speech API.
+
+Firefox does not currently provide the same level of voice-recognition support, but text input can still be used.
+
+The deployed version uses HTTPS, allowing microphone access in supported browsers.
+
+---
+
+## 🔮 Future Improvements
+
+* Real-time product data through a public API
+* Barcode scanning
+* Cloud synchronization
+* Multiple shopping lists
+* More language support
+* More personalized recommendations
+
+---
+
+## 👩‍💻 Author
+
+**Aarya Patel**
+Computer Science & Engineering — AI & Machine Learning
+
+## 📄 License
 
 MIT
