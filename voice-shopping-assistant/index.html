@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Manage your shopping list hands-free with voice commands." />
+  <meta name="theme-color" content="#7c6fff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VoiceCart" />
+  <meta property="og:title" content="VoiceCart" />
+  <meta property="og:description" content="Voice-controlled shopping list, runs entirely in your browser." />
+  <link rel="manifest" href="manifest.json" />
+  <title>VoiceCart</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- app shell -->
+  <div class="app-wrapper" id="app">
+
+    <!-- header -->
+    <header class="app-header glass-card" id="main-header">
+      <div class="header-left">
+        <div class="logo-mark">
+          <span class="logo-icon">🛒</span>
+          <span class="logo-pulse"></span>
+        </div>
+        <div class="header-titles">
+          <h1 class="app-title">VoiceCart</h1>
+          <p class="app-subtitle">Smart Shopping Assistant</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn tooltip-trigger" id="lang-btn" title="Switch Language" aria-label="Switch Language">
+          <span class="icon">🌐</span>
+          <span class="btn-label">EN</span>
+        </button>
+        <button class="icon-btn" id="clear-all-btn" title="Clear all items" aria-label="Clear list">
+          <span class="icon">🗑️</span>
+        </button>
+        <button class="icon-btn" id="share-btn" title="Share list" aria-label="Share list">
+          <span class="icon">📤</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- language picker -->
+    <div class="lang-panel" id="lang-panel">
+      <p class="lang-title">Select Language</p>
+      <div class="lang-grid" id="lang-grid"></div>
+    </div>
+
+    <!-- main content -->
+    <main class="app-main">
+
+      <!-- left column -->
+      <section class="left-col">
+
+        <!-- Voice Command Card -->
+        <div class="voice-card glass-card" id="voice-card">
+          <div class="vc-top">
+            <div class="vc-status" id="vc-status">
+              <span class="status-dot" id="status-dot"></span>
+              <span class="status-label" id="status-label">Tap the mic to start</span>
+            </div>
+            <select class="vc-lang-select" id="vc-lang-select" aria-label="Voice recognition language">
+              <!-- populated by JS -->
+            </select>
+          </div>
+
+          <!-- Waveform visualizer -->
+          <div class="waveform" id="waveform" aria-hidden="true">
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          </div>
+
+          <!-- Mic Button -->
+          <button class="mic-btn" id="mic-btn" aria-label="Start voice input" aria-pressed="false">
+            <span class="mic-ring mic-ring-1"></span>
+            <span class="mic-ring mic-ring-2"></span>
+            <span class="mic-icon" id="mic-icon">🎙️</span>
+          </button>
+
+          <!-- Transcript -->
+          <div class="transcript-box" id="transcript-box">
+            <p class="transcript-hint" id="transcript-hint">Say something like <em>"Add 2 bottles of milk"</em> or <em>"Remove apples"</em></p>
+            <p class="transcript-text" id="transcript-text"></p>
+          </div>
+
+          <!-- Voice Action Feedback -->
+          <div class="voice-action hidden" id="voice-action">
+            <span class="va-icon" id="va-icon"></span>
+            <span class="va-msg" id="va-msg"></span>
+          </div>
+
+          <!-- Manual Input Fallback -->
+          <div class="manual-input-wrap">
+            <input type="text" class="manual-input" id="manual-input" placeholder="Or type a command here…" aria-label="Manual command input" autocomplete="off" />
+            <button class="send-btn" id="send-btn" aria-label="Submit command">
+              <span>➤</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Command Reference Card -->
+        <div class="commands-card">
+          <h2 class="card-title"> 🎙 Voice Commands</h2>
+          <div class="cmd-grid">
+            <div class="cmd-item"><span class="cmd-tag add">Add</span><span class="cmd-ex">"Add 2 litres of milk"</span></div>
+            <div class="cmd-item"><span class="cmd-tag remove">Remove</span><span class="cmd-ex">"Remove apples"</span></div>
+            <div class="cmd-item"><span class="cmd-tag check">Check</span><span class="cmd-ex">"Check off butter"</span></div>
+            <div class="cmd-item"><span class="cmd-tag search">Search</span><span class="cmd-ex">"Find organic apples"</span></div>
+            <div class="cmd-item"><span class="cmd-tag clear">Clear</span><span class="cmd-ex">"Clear my list"</span></div>
+            <div class="cmd-item"><span class="cmd-tag qty">Quantity</span><span class="cmd-ex">"Buy 5 oranges"</span></div>
+          </div>
+        </div>
+
+        <!-- Search Card -->
+        <div class="search-card glass-card" id="search-card">
+          <h2 class="card-title">🔍Find Item</h2>
+          <div class="search-wrap">
+            <input type="text" class="search-input" id="search-input" placeholder='Search items (e.g. "organic apples under $5")' aria-label="Search items" />
+            <button class="search-btn" id="search-btn" aria-label="Voice search">🎙</button>
+          </div>
+          <div class="search-results" id="search-results"></div>
+        </div>
+
+      </section>
+
+      <!-- right column -->
+      <section class="right-col">
+
+        <!-- Stats Bar -->
+        <div class="stats-bar ">
+          <div class="stat-item">
+            <span class="stat-value" id="stat-total">0</span>
+            <span class="stat-label">Items</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value" id="stat-checked">0</span>
+            <span class="stat-label">Checked</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value" id="stat-categories">0</span>
+            <span class="stat-label">Categories</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value" id="stat-progress">0%</span>
+            <span class="stat-label">Progress</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-wrap glass-card">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <!-- Smart Suggestions -->
+        <div class="suggestions-card glass-card" id="suggestions-card">
+          <h2 class="card-title">💡Suggestions</h2>
+          <div class="suggestion-tabs">
+            <button class="sug-tab active" data-tab="recommendations" id="tab-rec">For You</button>
+            <button class="sug-tab" data-tab="seasonal" id="tab-sea">Seasonal</button>
+            <button class="sug-tab" data-tab="substitutes" id="tab-sub">Substitutes</button>
+          </div>
+          <div class="suggestion-panels">
+            <div class="sug-panel active" id="panel-recommendations"></div>
+            <div class="sug-panel" id="panel-seasonal"></div>
+            <div class="sug-panel" id="panel-substitutes"></div>
+          </div>
+        </div>
+
+        <!-- Shopping List -->
+        <div class="list-card glass-card" id="list-card">
+          <div class="list-header">
+            <h2 class="card-title">🛒Shopping List</h2>
+            <div class="list-controls">
+              <button class="list-ctrl-btn active" data-view="all" id="filter-all">All</button>
+              <button class="list-ctrl-btn" data-view="active" id="filter-active">Active</button>
+              <button class="list-ctrl-btn" data-view="done" id="filter-done">Done</button>
+            </div>
+          </div>
+
+          <!-- Category accordion list -->
+          <div class="category-list" id="category-list">
+            <div class="empty-state" id="empty-state">
+              <span class="empty-icon">🛒</span>
+              <p>Your list is empty.</p>
+              <p class="empty-sub">Use voice or type a command to get started!</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- toasts -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <!-- edit modal -->
+    <div class="modal-overlay hidden" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal glass-card">
+        <h3 class="modal-title" id="modal-title">Edit Item</h3>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="edit-name">Item Name</label>
+            <input type="text" id="edit-name" class="modal-input" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="edit-qty">Quantity</label>
+            <input type="text" id="edit-qty" class="modal-input" placeholder="e.g. 2, 1kg, 500ml" />
+          </div>
+          <div class="form-group">
+            <label for="edit-category">Category</label>
+            <select id="edit-category" class="modal-input">
+              <option value="produce">🥦 Produce</option>
+              <option value="dairy">🥛 Dairy</option>
+              <option value="meat">🥩 Meat & Seafood</option>
+              <option value="bakery">🍞 Bakery</option>
+              <option value="snacks">🍿 Snacks</option>
+              <option value="beverages">🧃 Beverages</option>
+              <option value="frozen">🧊 Frozen</option>
+              <option value="personal_care">🧴 Personal Care</option>
+              <option value="household">🏠 Household</option>
+              <option value="grains">🌾 Grains & Pasta</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-note">Note (optional)</label>
+            <input type="text" id="edit-note" class="modal-input" placeholder="e.g. organic, brand preference…" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-btn cancel-btn" id="modal-cancel">Cancel</button>
+          <button class="modal-btn save-btn" id="modal-save">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-wrapper -->
+
+  <script src="app.js"></script>
+</body>
+</html>
